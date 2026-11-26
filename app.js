@@ -57,6 +57,7 @@ function applyCut() {
   handle.setEffect('clip', cutOn ? { box: { min: world.clip.min, max: world.clip.max } } : null);
 }
 function showTitle() {
+  $('walk').href = `walk/?world=${world.id}`;
   titleEl.textContent = `${world.title} · ${world.size[0].toFixed(1)} × ${world.size[1].toFixed(1)} m`;
   for (const b of document.querySelectorAll('.world')) b.setAttribute('aria-current', String(b.dataset.id === world.id));
 }

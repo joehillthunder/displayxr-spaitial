@@ -43,6 +43,9 @@
            border-radius: 8px; padding: 7px 14px; cursor: pointer; }
   button:hover { border-color: var(--accent); }
   button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+  .btnlink { font: inherit; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 7px 14px; text-decoration: none; }
+  .btnlink.walk { background: var(--accent); border-color: var(--accent); color: #2c3038; font-weight: 600; }
+  .btnlink:hover { border-color: var(--text); }
   .depth { display: inline-flex; align-items: center; gap: 6px; }
   .depth output { min-width: 3.4em; text-align: center; color: var(--dim); }
 
@@ -68,7 +71,7 @@
 <div class="wrap">
   <header>
     <h1>SpAItial Worlds</h1>
-    <p class="sub">Real rooms, scanned with a phone and rebuilt by SpAItial's Echo-3, as 3D dollhouses at true scale. <a href="about/">About SpAItial and its API →</a></p>
+    <p class="sub">Real rooms, scanned with a phone and rebuilt by SpAItial's Echo-3, as 3D dollhouses at true scale. <a href="walk/">Walk inside</a> · <a href="about/">About SpAItial and its API →</a></p>
   </header>
 
   <div class="stage" id="stage">
@@ -79,6 +82,7 @@
   </div>
 
   <div class="bar">
+    <a class="btnlink walk" id="walk" href="walk/">Walk inside →</a>
     <button type="button" id="cut" aria-pressed="true" title="Cut away the ceiling and upper walls">Dollhouse</button>
     <button type="button" id="measure" aria-pressed="false" title="Click two points to measure in metres">Measure</button>
     <button type="button" id="spin" aria-pressed="true">Turntable</button>

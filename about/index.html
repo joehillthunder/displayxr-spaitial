@@ -170,7 +170,7 @@ footer ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: w
     <div class="sec-head">
       <span class="eyebrow">Gallery · Echo-3 captures</span>
       <h2>Real spaces, reconstructed</h2>
-      <p class="lede">Eight worlds from SpAItial's public gallery. Each card opens the walkable world on spaitial.ai. The <a href="../">3D viewer</a> streams six gallery rooms, four of them shown here.</p>
+      <p class="lede">Eight worlds from SpAItial's public gallery. Cards marked <b>Walk in 3D</b> step inside the room here, in glasses-free 3D on a DisplayXR display; the others open on spaitial.ai.</p>
     </div>
     <div class="gallery" id="gallery"></div>
   </section>
@@ -266,24 +266,24 @@ curl https://api.spaitial.ai/v1/worlds/requests/$REQUEST_ID/status \
 <script>
 (function () {
   var worlds = [
-    ["cbd8b97b-6953-45e1-abdf-93d818711af7", "House with Fireplace Lounge", "Real estate"],
+    ["cbd8b97b-6953-45e1-abdf-93d818711af7", "House with Fireplace Lounge", "Real estate", "splat-008-1020f57fbee6"],
     ["1bdcd1db-0756-4efa-8745-ec1f4620bf77", "Courtyard Garden with Wooden Balconies", "Outdoor"],
-    ["cb8fc580-771b-4b39-95cd-32030663136e", "School Library", "Indoor"],
+    ["cb8fc580-771b-4b39-95cd-32030663136e", "School Library", "Indoor", "splat-018-aa612739ee25"],
     ["2a02087e-6164-4da7-9b0f-e426b37e6539", "Museum Gallery with Modern Paintings", "Historical"],
     ["0e98a00c-96c3-4228-9fa5-e8bcbdfeba50", "School Gym", "Indoor"],
     ["88d3c14c-b03e-437b-abd3-daa67c877794", "Chinese Temple Hall", "Historical"],
-    ["9cdde88a-f423-4538-8bb2-8da601a43b72", "Historic Vaulted Hall", "Historical"],
-    ["51f5d96a-bbfe-4259-a209-cee8d6264039", "Colorful Kids Playroom", "Real estate"]
+    ["9cdde88a-f423-4538-8bb2-8da601a43b72", "Historic Vaulted Hall", "Historical", "splat-011-dc5135b6b5bf"],
+    ["51f5d96a-bbfe-4259-a209-cee8d6264039", "Colorful Kids Playroom", "Real estate", "splat-009-a3d7d7b2084d"]
   ];
   var g = document.getElementById("gallery");
   worlds.forEach(function (w) {
     var a = document.createElement("a");
     a.className = "world";
-    a.href = "https://spaitial.ai/gallery/" + w[0];
+    a.href = w[3] ? "../walk/?world=" + w[3] : "https://spaitial.ai/gallery/" + w[0];
     a.innerHTML = '<div class="img"><img loading="lazy" alt="" src="../thumbs/' + w[0] + '.webp"></div>' +
       '<div class="meta"><span class="title"></span><span class="cat"></span></div>';
     a.querySelector(".title").textContent = w[1];
-    a.querySelector(".cat").textContent = w[2];
+    a.querySelector(".cat").textContent = w[3] ? "Walk in 3D" : w[2] + " ↗";
     a.querySelector("img").alt = w[1];
     g.appendChild(a);
   });

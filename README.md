@@ -5,6 +5,8 @@ shown as glasses-free 3D dollhouses on a DisplayXR display, and in 2D in any oth
 
 - **3D viewer:** https://joehillthunder.github.io/displayxr-spaitial/ (six Echo-3 gallery rooms, cut away
   at 1.6 m, drag to turn, measure in metres, depth −/+, full panel). `?world=<id>` opens one room.
+- **Walk inside:** https://joehillthunder.github.io/displayxr-spaitial/walk/ stands you in the room at eye
+  height: drag to look, W A S D or arrows to walk, double-click to go to a spot.
 - **About:** https://joehillthunder.github.io/displayxr-spaitial/about/ covers Echo-2 / Echo HQ / Echo-3,
   the Developer API flow, export formats and pricing.
 

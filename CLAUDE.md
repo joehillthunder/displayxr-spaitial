@@ -6,6 +6,9 @@ About page on SpAItial's models, API, exports and pricing. Linked from DisplayXR
 - `index.html` + `app.js` + `worlds.json`: the 3D viewer. Restored from the HQ repo's removed
   `displayxr-demos/apps/echo-worlds` (commit a48b131^), which passed woven on the Leia panel.
   Import map pins playcanvas 2.22.3 and `@displayxr/inline3d` 1.46.0; keep the pins exact.
+- `walk/`: walk inside a room (`controls: 'page'`, `setCameraPose` in `onBeforeFrame`). Fixed convergence 2 m,
+  comfortDepth 0.3, depth control ≤ 100 %, eye 1.55 m above `floorY`, start at the capture origin facing the
+  room centre, clamped to the `clip` footprint. `window.spaitialWalk.pose()/.set()` for scripted checks.
 - `about/index.html`: static showcase page (no SDK, 2D). `thumbs/` are SpAItial gallery thumbnails for it.
 - No build, no keys. GitHub Pages serves `main` from the root.
 
