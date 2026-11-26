@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="SpAItial's Echo world models: splat preview, gallery, API walkthrough, exports and pricing. A DisplayXR HQ demo."><title>SpAItial World Models</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single reading column (max 1080px); one dark "viewer" band up top, then quiet sections with tables and a card grid. */
+:root {
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --fg: #141821;
+  --muted: #5b6474;
+  --line: #dde1e8;
+  --accent: #2f54eb;
+  --accent-ink: #ffffff;
+  --warm: #b45309;
+  --code-bg: #0f1320;
+  --code-fg: #dfe5f3;
+  --viewer-bg: #0b0e16;
+  --display: "Unbounded", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1117; --surface: #161a23; --fg: #e8ebf1; --muted: #9aa3b4; --line: #2a303c;
+    --accent: #7d98ff; --accent-ink: #0b0e16; --warm: #f0a24b; --code-bg: #0a0d15; --code-fg: #dfe5f3; --viewer-bg: #06080d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1117; --surface: #161a23; --fg: #e8ebf1; --muted: #9aa3b4; --line: #2a303c;
+  --accent: #7d98ff; --accent-ink: #0b0e16; --warm: #f0a24b; --code-bg: #0a0d15; --code-fg: #dfe5f3; --viewer-bg: #06080d;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 400 16px/1.6 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 2.5rem 4rem;
+}
+.wrap { max-width: 1080px; margin: 0 auto; display: grid; gap: 4.5rem; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(1.9rem, 4.6vw, 3.1rem); line-height: 1.1; }
+h2 { font-size: clamp(1.3rem, 2.6vw, 1.7rem); line-height: 1.2; }
+h3 { font-size: 1rem; font-weight: 500; }
+p { margin: 0; }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.eyebrow { font: 500 0.75rem/1 var(--mono); text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); }
+.lede { color: var(--muted); max-width: 62ch; font-size: 1.07rem; }
+section { display: grid; gap: 1.5rem; }
+.sec-head { display: grid; gap: 0.6rem; }
+
+/* Hero */
+.hero { display: grid; gap: 1.75rem; }
+.hero-text { display: grid; gap: 1rem; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 1.1rem; border-radius: 999px; font: 500 0.95rem var(--body); text-decoration: none; border: 1px solid var(--line); color: var(--fg); background: var(--surface); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.viewer { position: relative; background: var(--viewer-bg); border-radius: 14px; overflow: hidden; aspect-ratio: 2 / 1; max-width: 100%; touch-action: pan-y; cursor: grab; }
+.viewer canvas { width: 100%; height: 100%; display: block; }
+.viewer .hud { position: absolute; left: 14px; right: 14px; bottom: 12px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; font: 400 0.72rem/1.3 var(--mono); color: #a9b3c7; pointer-events: none; }
+.viewer .hud b { color: #ffffff; font-weight: 500; }
+.viewer .tag { position: absolute; top: 12px; left: 14px; font: 500 0.7rem var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: #ffffff; background: rgba(255,255,255,0.1); padding: 0.3rem 0.55rem; border-radius: 6px; }
+.caption { font-size: 0.85rem; color: var(--muted); }
+
+/* Models */
+.models { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+.model { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1.25rem; display: grid; gap: 0.75rem; align-content: start; }
+.model .name { font-family: var(--display); font-weight: 700; font-size: 1.2rem; }
+.model .slug { font: 400 0.8rem var(--mono); color: var(--muted); }
+.model dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 0.35rem 1rem; font-size: 0.92rem; }
+.model dt { color: var(--muted); }
+.model dd { margin: 0; font-variant-numeric: tabular-nums; }
+.model dd.cost { color: var(--warm); font-weight: 600; }
+.model p { font-size: 0.92rem; color: var(--muted); }
+.badge { justify-self: start; font: 500 0.7rem var(--mono); text-transform: uppercase; letter-spacing: 0.08em; padding: 0.2rem 0.5rem; border-radius: 5px; background: var(--accent); color: var(--accent-ink); }
+
+/* Gallery */
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem; }
+.world { display: grid; gap: 0.5rem; text-decoration: none; color: var(--fg); }
+.world .img { position: relative; aspect-ratio: 2 / 1; border-radius: 10px; overflow: hidden; background: var(--line); max-width: 100%; }
+.world img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
+.world:hover img { transform: scale(1.04); }
+.world .meta { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
+.world .title { font-weight: 500; font-size: 0.95rem; line-height: 1.3; }
+.world .cat { font: 400 0.72rem var(--mono); color: var(--muted); white-space: nowrap; }
+
+/* API */
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; counter-reset: step; }
+.step { border-top: 2px solid var(--accent); padding-top: 0.75rem; display: grid; gap: 0.35rem; }
+.step .n { font: 500 0.75rem var(--mono); color: var(--accent); }
+.step code { font: 400 0.8rem var(--mono); word-break: break-all; }
+.step p { font-size: 0.92rem; color: var(--muted); }
+.code { position: relative; background: var(--code-bg); color: var(--code-fg); border-radius: 12px; min-width: 0; }
+.code pre { margin: 0; padding: 1.25rem; overflow-x: auto; font: 400 0.82rem/1.6 var(--mono); }
+.code .k { color: #8fb4ff; } .code .s { color: #f5c07a; } .code .c { color: #7a8599; }
+.copy { position: absolute; top: 10px; right: 10px; font: 500 0.75rem var(--mono); background: rgba(255,255,255,0.1); color: #ffffff; border: 0; padding: 0.35rem 0.65rem; border-radius: 6px; cursor: pointer; }
+.copy:hover { background: rgba(255,255,255,0.18); }
+
+/* Tables */
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+th, td { text-align: left; padding: 0.7rem 1rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font: 500 0.72rem var(--mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+td code { font: 400 0.85rem var(--mono); }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.note { font-size: 0.88rem; color: var(--muted); max-width: 70ch; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2.5rem; }
+.two > * { min-width: 0; }
+footer { border-top: 1px solid var(--line); padding-top: 1.5rem; display: grid; gap: 0.6rem; font-size: 0.85rem; color: var(--muted); }
+footer ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
+@media (prefers-reduced-motion: reduce) { .world img { transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="hero-text">
+      <span class="eyebrow"><a href="https://joehillthunder.github.io/">← DisplayXR HQ</a> · SpAItial · Echo world models</span>
+      <h1>Type a sentence or scan a room. Get a 3D world you can walk through.</h1>
+      <p class="lede">SpAItial's Echo models turn text, a single photo, a 360° panorama, or an iPhone room scan into a Gaussian-splat world. It opens in the browser and exports to web, game-engine and DCC formats. Everything is available through a REST API.</p>
+      <div class="cta-row">
+        <a class="btn primary" href="https://spaitial.ai/gallery">Open the gallery ↗</a>
+        <a class="btn" href="https://docs.spaitial.ai/api/getting-started">API quickstart ↗</a>
+        <a class="btn" href="https://app.spaitial.ai">Try the app ↗</a>
+      </div>
+    </div>
+    <div class="viewer" id="viewer" aria-label="Interactive parallax preview of the House with Fireplace Lounge world">
+      <canvas id="splat"></canvas>
+      <span class="tag">Splat preview</span>
+      <div class="hud"><span><b>House with Fireplace Lounge</b> · Echo-3 capture</span><span id="hudPts">drag or move to orbit</span></div>
+    </div>
+    <p class="caption">This is an illustration drawn in your browser: about 9,000 soft Gaussian dots sampled from the world's gallery thumbnail, with estimated depth for parallax. It shows the idea, not SpAItial's renderer. <a href="https://spaitial.ai/gallery/cbd8b97b-6953-45e1-abdf-93d818711af7">Walk the real world ↗</a></p>
+  </header>
+
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">The models</span>
+      <h2>Three ways in</h2>
+      <p class="lede">Each request names a model. Credits cost $0.01 each, and the Free plan includes 800 a month, enough for five Echo-2 worlds.</p>
+    </div>
+    <div class="models">
+      <article class="model">
+        <span class="badge">Generate</span>
+        <div><div class="name">Echo-2</div><div class="slug">model: "echo-2"</div></div>
+        <dl><dt>Input</dt><dd>Text, image or 360° panorama</dd><dt>Time</dt><dd>~8–9 min</dd><dt>Cost</dt><dd class="cost">160 credits</dd></dl>
+        <p>The everyday model. Good for concept spaces, previs sets and game blockouts.</p>
+      </article>
+      <article class="model">
+        <span class="badge">Generate</span>
+        <div><div class="name">Echo HQ</div><div class="slug">model: "echo-hq"</div></div>
+        <dl><dt>Input</dt><dd>Text, image or 360° panorama</dd><dt>Time</dt><dd>~60 min</dd><dt>Cost</dt><dd class="cost">800 credits</dd></dl>
+        <p>Higher detail when the world is the final asset, not a sketch.</p>
+      </article>
+      <article class="model">
+        <span class="badge">Reconstruct</span>
+        <div><div class="name">Echo-3</div><div class="slug">model: "echo-3"</div></div>
+        <dl><dt>Input</dt><dd>iPhone capture (SpAItial app or <code>capture_bundle</code>)</dd><dt>Time</dt><dd>30–120 min</dd><dt>Cost</dt><dd class="cost">300 credits/min, 900 min.</dd></dl>
+        <p>Released Oct 27, 2026. Metric-scale real rooms, fills in unseen areas, multi-floor, up to 8 scans merged.</p>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">Gallery · Echo-3 captures</span>
+      <h2>Real spaces, reconstructed</h2>
+      <p class="lede">Eight worlds from SpAItial's public gallery. Each card opens the walkable world on spaitial.ai.</p>
+    </div>
+    <div class="gallery" id="gallery"></div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">Developer API · api.spaitial.ai/v1</span>
+      <h2>From prompt to splat in three calls</h2>
+      <p class="lede">Generation is asynchronous. Submit a request, poll its status (or register a webhook), then fetch the world. The response includes a hosted <code>viewer_url</code>.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="n">1 · submit</span><code>POST /v1/worlds</code><p>Returns a <code>request_id</code>.</p></div>
+      <div class="step"><span class="n">2 · wait</span><code>GET /v1/worlds/requests/{id}/status</code><p>Poll, or receive a webhook when done.</p></div>
+      <div class="step"><span class="n">3 · fetch</span><code>GET /v1/worlds/requests/{id}/splat</code><p>302 to a signed download URL, valid 5 minutes.</p></div>
+    </div>
+    <div class="code">
+      <button class="copy" id="copyBtn" type="button">Copy</button>
+<pre id="codeBlock"><span class="c"># Key from developers.spaitial.ai/api-keys (spt_live_…)</span>
+curl -X POST https://api.spaitial.ai/v1/worlds \
+  -H <span class="s">"Authorization: Bearer $SPAITIAL_API_KEY"</span> \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">'{
+    "model": "echo-2",
+    "title": "Night market under neon signs",
+    "output_format": "spz",
+    "input": {
+      "type": "text",
+      "prompt": "A narrow night market street, neon signs, wet pavement, steam from food stalls"
+    }
+  }'</span>
+
+<span class="c"># → { "request_id": "…" }  then poll:</span>
+curl https://api.spaitial.ai/v1/worlds/requests/$REQUEST_ID/status \
+  -H <span class="s">"Authorization: Bearer $SPAITIAL_API_KEY"</span></pre>
+    </div>
+    <p class="note">Also on the API: image upload (<code>POST /v1/files</code>), mesh, simplified-mesh, floorplan and zip exports, reconstructed capture cameras for Echo-3, and <code>GET /v1/models</code>. A hosted MCP server at <code>mcp.spaitial.ai/mcp</code> lets coding agents such as Claude Code call it directly.</p>
+  </section>
+
+  <section class="two">
+    <div style="display:grid;gap:1.25rem;align-content:start">
+      <div class="sec-head">
+        <span class="eyebrow">Exports · 0 credits</span>
+        <h2>Where the world goes next</h2>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Asset</th><th>File</th><th>Use</th></tr></thead>
+          <tbody>
+            <tr><td>SPZ</td><td><code>.spz</code></td><td>Compact splats for web streaming and custom engines</td></tr>
+            <tr><td>SOG</td><td><code>.sog</code></td><td>PlayCanvas and SuperSplat</td></tr>
+            <tr><td>PLY</td><td><code>.ply</code></td><td>Blender, Postshot, Unreal, Unity</td></tr>
+            <tr><td>Collision mesh</td><td><code>.ply</code></td><td class="num">~700K tris full, ~70K simplified</td></tr>
+            <tr><td>Floorplan</td><td><code>.png</code> + <code>.json</code></td><td>Top-down render with pixel-to-meters matrix</td></tr>
+            <tr><td>Cameras</td><td><code>cameras.json</code></td><td>Echo-3 intrinsics and poses (OpenCV)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">SPZ positions use OpenCV/COLMAP axes (+Y down). Third-party viewers may need a 180° rotation about X. SOG and PLY are already Y-up.</p>
+    </div>
+    <div style="display:grid;gap:1.25rem;align-content:start">
+      <div class="sec-head">
+        <span class="eyebrow">Plans · Nov 2026</span>
+        <h2>What it costs</h2>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Plan</th><th>Price</th><th>Credits/mo</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Free</td><td class="num">$0</td><td class="num">800</td><td>Echo-2 and HQ API, non-commercial</td></tr>
+            <tr><td>Standard</td><td class="num">$49.99/mo</td><td class="num">7,500</td><td>Adds Echo-3 API, non-commercial</td></tr>
+            <tr><td>Pro</td><td class="num">$99.99/mo</td><td class="num">15,000</td><td>Commercial rights</td></tr>
+            <tr><td>Enterprise</td><td class="num">Custom</td><td class="num">Custom</td><td>Contact sales</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">First month of Standard or Pro is free (card required). Worlds can be embedded on any site with a private token link, <code>embed.spaitial.ai/e/&lt;token&gt;</code>, configurable to start in Orbit, Walk or Dollhouse mode.</p>
+    </div>
+  </section>
+
+  <footer>
+    <span>Compiled Nov 25, 2026 from SpAItial's public site and docs. Check the source pages for current pricing and limits.</span>
+    <ul>
+      <li><a href="https://spaitial.ai/">spaitial.ai</a></li>
+      <li><a href="https://docs.spaitial.ai/overview/welcome">Product docs</a></li>
+      <li><a href="https://docs.spaitial.ai/api/getting-started">API quickstart</a></li>
+      <li><a href="https://docs.spaitial.ai/worlds/download-export">Export formats</a></li>
+      <li><a href="https://spaitial.ai/blog/echo-3-release">Echo-3 release</a></li>
+      <li><a href="https://spaitial.ai/pricing">Pricing</a></li>
+    </ul>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var worlds = [
+    ["cbd8b97b-6953-45e1-abdf-93d818711af7", "House with Fireplace Lounge", "Real estate"],
+    ["1bdcd1db-0756-4efa-8745-ec1f4620bf77", "Courtyard Garden with Wooden Balconies", "Outdoor"],
+    ["cb8fc580-771b-4b39-95cd-32030663136e", "School Library", "Indoor"],
+    ["2a02087e-6164-4da7-9b0f-e426b37e6539", "Museum Gallery with Modern Paintings", "Historical"],
+    ["0e98a00c-96c3-4228-9fa5-e8bcbdfeba50", "School Gym", "Indoor"],
+    ["88d3c14c-b03e-437b-abd3-daa67c877794", "Chinese Temple Hall", "Historical"],
+    ["9cdde88a-f423-4538-8bb2-8da601a43b72", "Historic Vaulted Hall", "Historical"],
+    ["51f5d96a-bbfe-4259-a209-cee8d6264039", "Colorful Kids Playroom", "Real estate"]
+  ];
+  var g = document.getElementById("gallery");
+  worlds.forEach(function (w) {
+    var a = document.createElement("a");
+    a.className = "world";
+    a.href = "https://spaitial.ai/gallery/" + w[0];
+    a.innerHTML = '<div class="img"><img loading="lazy" alt="" src="thumbs/' + w[0] + '.webp"></div>' +
+      '<div class="meta"><span class="title"></span><span class="cat"></span></div>';
+    a.querySelector(".title").textContent = w[1];
+    a.querySelector(".cat").textContent = w[2];
+    a.querySelector("img").alt = w[1];
+    g.appendChild(a);
+  });
+
+  var btn = document.getElementById("copyBtn");
+  btn.addEventListener("click", function () {
+    var text = document.getElementById("codeBlock").innerText;
+    function done(msg) { btn.textContent = msg; setTimeout(function () { btn.textContent = "Copy"; }, 1600); }
+    try {
+      navigator.clipboard.writeText(text).then(function () { done("Copied"); }, function () { selectCode(); done("Press Ctrl+C"); });
+    } catch (e) { selectCode(); done("Press Ctrl+C"); }
+  });
+  function selectCode() {
+    var r = document.createRange(); r.selectNodeContents(document.getElementById("codeBlock"));
+    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+  }
+
+  // Splat-style parallax preview
+  var viewer = document.getElementById("viewer");
+  var cv = document.getElementById("splat");
+  var ctx = cv.getContext("2d");
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var pts = [], W = 0, H = 0, dpr = 1;
+  var target = { x: 0, y: 0 }, cur = { x: 0, y: 0 }, userActive = 0, t0 = performance.now();
+  var sprite = document.createElement("canvas");
+  (function () {
+    sprite.width = sprite.height = 32;
+    var c = sprite.getContext("2d");
+    var gr = c.createRadialGradient(16, 16, 0, 16, 16, 16);
+    gr.addColorStop(0, "rgba(255,255,255,1)");
+    gr.addColorStop(0.45, "rgba(255,255,255,0.55)");
+    gr.addColorStop(1, "rgba(255,255,255,0)");
+    c.fillStyle = gr; c.fillRect(0, 0, 32, 32);
+  })();
+  var tinted = {};
+  function resize() {
+    var r = viewer.getBoundingClientRect();
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = r.width; H = r.height;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  }
+  var img = new Image();
+  img.onload = function () {
+    var sw = 160, sh = 80;
+    var off = document.createElement("canvas"); off.width = sw; off.height = sh;
+    var oc = off.getContext("2d"); oc.drawImage(img, 0, 0, sw, sh);
+    var data = oc.getImageData(0, 0, sw, sh).data;
+    for (var i = 0; i < 9000; i++) {
+      var u = Math.random(), v = Math.random();
+      var px = Math.min(sw - 1, Math.floor(u * sw)), py = Math.min(sh - 1, Math.floor(v * sh));
+      var k = (py * sw + px) * 4;
+      // Room-like depth: far at the back wall (center), near at the walls, floor and ceiling.
+      var dx = Math.abs(u - 0.5) * 2, dy = Math.abs(v - 0.48) * 2.2;
+      var near = Math.min(1, Math.max(dx, dy));
+      var z = 0.15 + 0.85 * Math.pow(near, 1.4) + (Math.random() - 0.5) * 0.05;
+      pts.push({ u: u, v: v, z: z, s: 0.6 + Math.random() * 0.8, c: [data[k], data[k + 1], data[k + 2]] });
+    }
+    pts.sort(function (a, b) { return a.z - b.z; });
+    document.getElementById("hudPts").textContent = pts.length.toLocaleString() + " splats · drag or move to orbit";
+    requestAnimationFrame(frame);
+  };
+  img.src = "thumbs/cbd8b97b-6953-45e1-abdf-93d818711af7.webp";
+
+  function frame(now) {
+    if (!W) resize();
+    if (now - userActive > 2500 && !reduce) {
+      var t = (now - t0) / 1000;
+      target.x = Math.sin(t * 0.35) * 0.9; target.y = Math.sin(t * 0.23) * 0.35;
+    }
+    cur.x += (target.x - cur.x) * 0.06; cur.y += (target.y - cur.y) * 0.06;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = "#0b0e16"; ctx.fillRect(0, 0, W, H);
+    var base = Math.max(3, W / 95);
+    var shiftX = W * 0.06, shiftY = H * 0.05;
+    for (var i = 0; i < pts.length; i++) {
+      var p = pts[i];
+      var scale = 0.9 + p.z * 0.16;
+      var x = (p.u - 0.5) * W * scale + W / 2 + cur.x * shiftX * (p.z - 0.4);
+      var y = (p.v - 0.5) * H * scale + H / 2 + cur.y * shiftY * (p.z - 0.4);
+      var r = base * p.s * (0.8 + p.z * 0.7);
+      ctx.globalAlpha = 0.85;
+      ctx.fillStyle = "rgb(" + p.c[0] + "," + p.c[1] + "," + p.c[2] + ")";
+      ctx.beginPath(); ctx.ellipse(x, y, r, r * 0.8, 0, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(frame);
+  }
+  function setFromEvent(e) {
+    var r = viewer.getBoundingClientRect();
+    target.x = ((e.clientX - r.left) / r.width - 0.5) * 2;
+    target.y = ((e.clientY - r.top) / r.height - 0.5) * 2;
+    userActive = performance.now();
+  }
+  viewer.addEventListener("pointermove", setFromEvent);
+  viewer.addEventListener("pointerdown", setFromEvent);
+  window.addEventListener("resize", function () { W = 0; });
+})();
+</script>
+
+</body>
+</html>
